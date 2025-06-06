@@ -1,8 +1,8 @@
 package com.E_Commerce.eCom.Service;
 
 import com.E_Commerce.eCom.ExceptionHandler.ResourceNotFoundException;
-import com.E_Commerce.eCom.Payload.CategoryDTO;
-import com.E_Commerce.eCom.Payload.CategoryResponse;
+import com.E_Commerce.eCom.Payload.CategoryPayload.CategoryDTO;
+import com.E_Commerce.eCom.Payload.CategoryPayload.CategoryResponse;
 import com.E_Commerce.eCom.Repository.CategoryRepo;
 import com.E_Commerce.eCom.ExceptionHandler.APIException;
 import com.E_Commerce.eCom.Model.Category;

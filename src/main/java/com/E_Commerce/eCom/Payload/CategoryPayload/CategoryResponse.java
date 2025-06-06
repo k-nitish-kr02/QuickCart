@@ -1,4 +1,4 @@
-package com.E_Commerce.eCom.Payload;
+package com.E_Commerce.eCom.Payload.CategoryPayload;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,8 +12,8 @@ import java.util.List;
 public class CategoryResponse {
     private List<CategoryDTO> content;
     private Integer pageNumber;
+    private Long totalElements;
     private Integer pageSize;
-    private  Long totalElements;
     private Integer totalPages;
     private boolean lastPage;
 }

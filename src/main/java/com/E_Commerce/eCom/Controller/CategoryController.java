@@ -1,13 +1,12 @@
 package com.E_Commerce.eCom.Controller;
 
 import com.E_Commerce.eCom.Configurations.AppConstants;
-import com.E_Commerce.eCom.Payload.CategoryDTO;
-import com.E_Commerce.eCom.Payload.CategoryResponse;
+import com.E_Commerce.eCom.Payload.CategoryPayload.CategoryDTO;
+import com.E_Commerce.eCom.Payload.CategoryPayload.CategoryResponse;
 import com.E_Commerce.eCom.Service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,19 +31,19 @@ public class CategoryController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/public/categories")
+    @PostMapping("/admin/categories")
     public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO ){
         categoryDTO = categoryService.createCategory(categoryDTO);
         return  new ResponseEntity<>(categoryDTO,HttpStatus.OK);
     }
 
-    @PutMapping("/public/categories/{Id}")
+    @PutMapping("/admin/categories/{Id}")
     public ResponseEntity<CategoryDTO> updateCategory(@Valid @RequestBody CategoryDTO categoryDTO, @PathVariable Long Id){
         categoryDTO = categoryService.updateCategory(categoryDTO,Id);
         return new ResponseEntity<>(categoryDTO,HttpStatus.OK);
     }
 
-    @DeleteMapping("/public/categories/{Id}")
+    @DeleteMapping("/admin/categories/{Id}")
     public ResponseEntity<String> deleteById(@PathVariable Long Id){
         categoryService.deleteCategory(Id);
         return new ResponseEntity<>("Category Deleted.",HttpStatus.OK);

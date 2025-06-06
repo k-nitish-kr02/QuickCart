@@ -1,4 +1,4 @@
-package com.E_Commerce.eCom.Payload;
+package com.E_Commerce.eCom.Payload.CategoryPayload;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
