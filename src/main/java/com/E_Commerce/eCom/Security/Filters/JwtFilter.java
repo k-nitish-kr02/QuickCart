@@ -1,6 +1,7 @@
 package com.E_Commerce.eCom.Security.Filters;
 
 import com.E_Commerce.eCom.ExceptionHandler.APIException;
+import com.E_Commerce.eCom.Security.Configurations.AuthEntryPointJwt;
 import com.E_Commerce.eCom.Security.Services.JwtService;
 import com.E_Commerce.eCom.Security.Services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
@@ -8,6 +9,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,14 +48,17 @@ public class JwtFilter extends OncePerRequestFilter {
             if(jwtService.isTokenValid(token))
                 username = Optional.ofNullable(jwtService.extractUsername(token)).orElseThrow(() -> new APIException("Invalid token")) ;
 
-            if (SecurityContextHolder.getContext().getAuthentication() == null){
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
             }
         }
+
         filterChain.doFilter(request,response);
+
+
     }
 }

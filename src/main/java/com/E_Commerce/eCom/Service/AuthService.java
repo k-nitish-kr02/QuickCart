@@ -5,6 +5,7 @@ import com.E_Commerce.eCom.Model.AppRole;
 import com.E_Commerce.eCom.Model.Role;
 import com.E_Commerce.eCom.Model.User;
 import com.E_Commerce.eCom.Payload.Responses.AuthResponse;
+import com.E_Commerce.eCom.Payload.RolePayload.RoleDTO;
 import com.E_Commerce.eCom.Payload.UserPayload.UserDTO;
 import com.E_Commerce.eCom.Repository.RoleRepository;
 import com.E_Commerce.eCom.Repository.UserRepo;
@@ -25,6 +26,7 @@ import javax.management.remote.JMXAuthenticator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
@@ -63,16 +65,16 @@ public class AuthService {
                     .email(request.getEmail())
                     .build();
 
-        Set<String> strRole =request.getRoles();
+        Set<String> requestedRoles =request.getRoles();
         Set<Role> roles = new HashSet<>();
 
 
-        if(strRole.isEmpty()){
+        if(requestedRoles.isEmpty()){
             Role usrRole = Optional.ofNullable(roleRepository.findByRoleName(AppRole.ROLE_USER)).orElseThrow(()-> new APIException("No such role found"));
             roles.add(usrRole);
         }
         else{
-            strRole.forEach(role -> {
+            requestedRoles.forEach(role -> {
                     switch(role){
                         case "admin" :
                             Role adminRole = Optional.ofNullable(roleRepository.findByRoleName(AppRole.ROLE_ADMIN)).orElseThrow(()-> new APIException("No such role found"));
@@ -81,7 +83,6 @@ public class AuthService {
                         case "seller":
                             Role sellerRole = Optional.ofNullable(roleRepository.findByRoleName(AppRole.ROLE_SELLER)).orElseThrow(()-> new APIException("No such role found"));
                             roles.add(sellerRole);
-
                             break;
                         default:
                             Role usrRole = Optional.ofNullable(roleRepository.findByRoleName(AppRole.ROLE_USER)).orElseThrow(()-> new APIException("No such role found"));
@@ -94,6 +95,14 @@ public class AuthService {
         user.setRoles(roles);
         User savedUser = userRepo.save(user);
         UserDTO savedUserDTO = modelMapper.map(savedUser,UserDTO.class);
+
+        Set<String> rolesDTO = savedUser.getRoles().stream().map(role -> role.getRoleName().toString()).collect(Collectors.toSet());
+
+        RoleDTO roleDTO = new RoleDTO();
+        roleDTO.setRoles(rolesDTO);
+
+        savedUserDTO.setRoleGranted(roleDTO);
+
 
         String token = jwtService.createJwt(request.getUsername());
 
@@ -111,6 +120,11 @@ public class AuthService {
 
         String token = jwtService.createJwt(username);
         User user  = userRepo.findByUsername(username);
-        return new AuthResponse(token,modelMapper.map(user, UserDTO.class));
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+
+        Set<String> rolesDTO = user.getRoles().stream().map(role -> role.getRoleName().toString()).collect(Collectors.toSet());
+
+        userDTO.setRoleGranted( new RoleDTO(rolesDTO) );
+        return new AuthResponse(token,userDTO);
     }
 }

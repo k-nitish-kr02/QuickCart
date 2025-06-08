@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
         String message = ex.getMessage();
         APIresponse apiResponse = new APIresponse(message,false);
         if(Objects.equals(message, "Category name already exists.")) return new ResponseEntity<>(apiResponse,HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(apiResponse,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(apiResponse,HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
