@@ -7,6 +7,7 @@ import com.E_Commerce.eCom.Model.User;
 import com.E_Commerce.eCom.Payload.Responses.AuthResponse;
 import com.E_Commerce.eCom.Payload.RolePayload.RoleDTO;
 import com.E_Commerce.eCom.Payload.UserPayload.UserDTO;
+import com.E_Commerce.eCom.Payload.UserPayload.UserResponse;
 import com.E_Commerce.eCom.Repository.RoleRepository;
 import com.E_Commerce.eCom.Repository.UserRepo;
 import com.E_Commerce.eCom.Requests.AuthRequest;
@@ -14,6 +15,11 @@ import com.E_Commerce.eCom.Requests.SignUpRequest;
 import com.E_Commerce.eCom.Security.Services.JwtService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -128,5 +135,42 @@ public class AuthService {
 
         userDTO.setRoleGranted( new RoleDTO(rolesDTO) );
         return new AuthResponse(cookie,userDTO);
+    }
+
+    @Value("${spring.jwt.cookie}")
+    private String jwtCookie;
+
+    public ResponseCookie cleanCurrentCookie() {
+
+        return ResponseCookie.from(jwtCookie,null).path("/api").build();
+    }
+
+    public UserResponse getAllUsers(Integer pageNumber, Integer pageSize,String sortBy,String sortOrder) {
+
+        Sort sort = sortOrder.equalsIgnoreCase("asc")
+                ?Sort.by(sortBy).ascending()
+                :Sort.by(sortBy).descending();
+
+        Pageable pageDetails = PageRequest.of(pageNumber,pageSize,sort);
+        Page<User> page = userRepo.findAll(pageDetails);
+        List<User> users = page.getContent();
+
+        List<UserDTO> userDTOs = users.stream().map(user -> {
+            Set<String> roles = new HashSet<>();
+            roles = user.getRoles().stream().map(role -> role.getRoleName().toString()).collect(Collectors.toSet());
+            RoleDTO roleDTO = new RoleDTO(roles);
+            UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+            userDTO.setRoleGranted(roleDTO);
+            return userDTO;
+        }).toList();
+
+        return UserResponse.builder()
+                .users(userDTOs)
+                .pageNumber(page.getNumber())
+                .pageSize(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .lastPage(page.isLast())
+                .build();
     }
 }

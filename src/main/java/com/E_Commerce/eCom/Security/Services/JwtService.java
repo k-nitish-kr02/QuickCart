@@ -1,6 +1,7 @@
 package com.E_Commerce.eCom.Security.Services;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -69,7 +70,17 @@ public class JwtService {
 
     // validation -> isExpired
     public boolean isTokenValid(String token){
-        return !extractClaim(token,claims -> claims.getExpiration()).before(new Date(System.currentTimeMillis()));
+        if(token.isEmpty()) return false;
+
+        try{
+            return !extractClaim(token,claims -> claims.getExpiration()).before(new Date(System.currentTimeMillis()));
+        }catch (ExpiredJwtException ex){
+            System.out.println("Expired Jwt");
+            return false;
+        }catch (Exception e){
+            System.out.println("Invalid jwt");
+            return false;
+        }
     }
 
 

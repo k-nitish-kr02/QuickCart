@@ -4,6 +4,7 @@ import com.E_Commerce.eCom.ExceptionHandler.APIException;
 import com.E_Commerce.eCom.Security.Configurations.AuthEntryPointJwt;
 import com.E_Commerce.eCom.Security.Services.JwtService;
 import com.E_Commerce.eCom.Security.Services.UserDetailsServiceImpl;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,11 +48,13 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = jwtService.getJwtFromCookie(request);
         String username = null;
 
+        if(token!=null && jwtService.isTokenValid(token)){
 
-        if(jwtService.isTokenValid(token))
             username = Optional.ofNullable(jwtService.extractUsername(token)).orElseThrow(() -> new APIException("Invalid token")) ;
 
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        }
+
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

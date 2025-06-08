@@ -1,5 +1,6 @@
 package com.E_Commerce.eCom.Security.Configurations;
 
+import com.E_Commerce.eCom.Model.AppRole;
 import com.E_Commerce.eCom.Security.Filters.JwtFilter;
 import com.E_Commerce.eCom.Security.Services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class SecurityConfig {
     AuthEntryPointJwt authEntryPointJwt;
 
     @Autowired
+    CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    @Autowired
     public SecurityConfig(JwtFilter jwtFilter,UserDetailsServiceImpl userDetailsService){
         this.jwtFilter = jwtFilter;
         this.userDetailsService = userDetailsService;
@@ -45,10 +49,15 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasAuthority(AppRole.ROLE_ADMIN.toString())
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(authEntryPointJwt))
-//                .httpBasic(Customizer.withDefaults())
+                .exceptionHandling(ex ->
+                        ex    .authenticationEntryPoint(authEntryPointJwt)
+                                .accessDeniedHandler(customAccessDeniedHandler)
+                )
+
+                .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .formLogin(Customizer.withDefaults())

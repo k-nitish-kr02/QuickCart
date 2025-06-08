@@ -1,7 +1,10 @@
 package com.E_Commerce.eCom.Controller;
 
+import com.E_Commerce.eCom.Configurations.AppConstants;
+import com.E_Commerce.eCom.Model.User;
 import com.E_Commerce.eCom.Payload.Responses.AuthResponse;
 import com.E_Commerce.eCom.Payload.UserPayload.UserDTO;
+import com.E_Commerce.eCom.Payload.UserPayload.UserResponse;
 import com.E_Commerce.eCom.Requests.AuthRequest;
 import com.E_Commerce.eCom.Requests.SignUpRequest;
 import com.E_Commerce.eCom.Service.AuthService;
@@ -11,6 +14,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -43,7 +48,7 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,jwtCookie.toString()).body(userInfoResponse);
     }
 
-    @GetMapping("/auth/health-check")
+    @GetMapping("/health-check")
     public String healthcheck(){
         return "everything is working fine.";
     }
@@ -61,12 +66,24 @@ public class AuthController {
 //        return ResponseEntity.ok(savedRole);
 //    }
 
-    public ResponseEntity<?> getAllUsers(){
-        return null;
+    @GetMapping("/admin/auth/getAllUsers")
+    public ResponseEntity<?> getAllUsers(
+            @RequestParam(name = "pageNumber" , defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber ,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_USERS_BY,required = false) String sortBy,
+            @RequestParam(name = "sortOrder",defaultValue = AppConstants.SORT_DIR,required = false) String sortOrder
+    ){
+        UserResponse response = authService.getAllUsers(pageNumber,pageSize,sortBy,sortOrder);
+        return ResponseEntity.ok(response);
     }
 
     public ResponseEntity<?> getUser(){
         return null;
+    }
+    @PostMapping("/auth/signOut")
+    public ResponseEntity<?> signOut(){
+        ResponseCookie cookie = authService.cleanCurrentCookie();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).body("Signed out successfully..");
     }
 
     public ResponseEntity<?> deleteUser(){
