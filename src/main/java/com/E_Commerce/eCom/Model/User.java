@@ -5,10 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.hibernate.engine.internal.Cascade;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +17,7 @@ import java.util.Set;
 
 @Entity
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users",
@@ -40,7 +38,7 @@ public class User {
     private String username;
 
     @NotBlank
-    @Size(max = 50)
+    @Size(min =8 , max = 100)
     private String password;
 
     @NotBlank

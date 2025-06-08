@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.sql.Time;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -47,7 +48,7 @@ public class JwtService {
 
     // validation -> isExpired
     public boolean isTokenValid(String token){
-        return extractClaim(token,claims -> claims.getExpiration()).before(new Time(System.currentTimeMillis()));
+        return !extractClaim(token,claims -> claims.getExpiration()).before(new Date(System.currentTimeMillis()));
     }
 
 
@@ -58,8 +59,8 @@ public class JwtService {
                 .claims()
                 .add(claims)
                 .subject(username)
-                .issuedAt(new Time(System.currentTimeMillis()))
-                .expiration(new Time(System.currentTimeMillis() + 1000 * 60 *5))
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 *5))
                 .and()
                 .signWith(getSignedKey())
                 .compact();

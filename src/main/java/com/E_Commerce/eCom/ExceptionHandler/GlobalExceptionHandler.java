@@ -75,4 +75,9 @@ public class GlobalExceptionHandler {
         APIresponse apiResponse = new APIresponse("Something goes off ." + ex.getMessage() ,false);
         return new ResponseEntity<>(apiResponse,HttpStatus.INTERNAL_SERVER_ERROR);
     }
+//    @ExceptionHandler(APIException.class)
+//    public ResponseEntity<?> myAPIExceptionHandler(APIException ex){
+//        APIresponse apiResponse =  new APIresponse(ex.getMessage(),false);
+//        return new ResponseEntity<>(apiResponse,HttpStatus.BAD_REQUEST);
+//    }
 }

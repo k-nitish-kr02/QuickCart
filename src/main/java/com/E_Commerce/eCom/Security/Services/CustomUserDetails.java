@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -19,12 +20,14 @@ public class CustomUserDetails implements UserDetails {
     private final String password;
 
 
-    Collection<? extends GrantedAuthority> authorities ;
+    private Collection<? extends GrantedAuthority> authorities;
 
 
     public CustomUserDetails(User user) {
         this.username = user.getUsername();
         this.password = user.getPassword();
+
+//        if(user.getRoles().isEmpty()) this.authorities = new ArrayList<>();
 
         this.authorities  = user.getRoles()
                 .stream()
@@ -32,6 +35,7 @@ public class CustomUserDetails implements UserDetails {
                 .collect(Collectors.toList());
 
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
