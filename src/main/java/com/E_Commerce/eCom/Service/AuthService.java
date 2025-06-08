@@ -12,17 +12,16 @@ import com.E_Commerce.eCom.Repository.UserRepo;
 import com.E_Commerce.eCom.Requests.AuthRequest;
 import com.E_Commerce.eCom.Requests.SignUpRequest;
 import com.E_Commerce.eCom.Security.Services.JwtService;
-import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.management.remote.JMXAuthenticator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -104,9 +103,11 @@ public class AuthService {
         savedUserDTO.setRoleGranted(roleDTO);
 
 
-        String token = jwtService.createJwt(request.getUsername());
+//        String token = jwtService.createJwt(request.getUsername());
+        ResponseCookie jwtCookie = jwtService.generateJwtCookie(request.getUsername());
+        String token = jwtCookie.toString();
 
-        return new AuthResponse(token, savedUserDTO);
+        return new AuthResponse(jwtCookie, savedUserDTO);
     }
 
     public AuthResponse signIn(AuthRequest authRequest) {
@@ -118,13 +119,14 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(username,password)
         );
 
-        String token = jwtService.createJwt(username);
+//        String token = jwtService.createJwt(username);
+        ResponseCookie cookie = jwtService.generateJwtCookie(username);
         User user  = userRepo.findByUsername(username);
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
         Set<String> rolesDTO = user.getRoles().stream().map(role -> role.getRoleName().toString()).collect(Collectors.toSet());
 
         userDTO.setRoleGranted( new RoleDTO(rolesDTO) );
-        return new AuthResponse(token,userDTO);
+        return new AuthResponse(cookie,userDTO);
     }
 }

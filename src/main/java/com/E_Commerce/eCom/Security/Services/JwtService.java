@@ -3,11 +3,14 @@ package com.E_Commerce.eCom.Security.Services;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.WebUtils;
 
 import javax.crypto.SecretKey;
-import java.sql.Time;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +22,24 @@ public class JwtService {
 
     @Value("${spring.secretKey}")
     private String SECRET_KEY ;
+    @Value("${spring.jwt.cookie}")
+    private String jwtCookie;
+
+    public String getJwtFromCookie(HttpServletRequest request){
+       Cookie cookie = WebUtils.getCookie(request,jwtCookie);
+       if(cookie!=null) return cookie.getValue();
+       else return  null;
+    }
+
+    public ResponseCookie generateJwtCookie(String username){
+        String jwt = createJwt(username);
+        ResponseCookie cookie = ResponseCookie.from(jwtCookie,jwt)
+                .path("/api")
+                .maxAge(24*60*60)
+                .httpOnly(false)
+                .build();
+        return cookie;
+    }
 
 
     private SecretKey getSignedKey(){
