@@ -2,12 +2,9 @@ package com.E_Commerce.eCom.Model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.engine.internal.Cascade;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,19 +42,31 @@ public class User {
     @Email
     private String email;
 
+    //Unidirectional Relationship
     @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST},orphanRemoval = true)
-    @JoinColumn(name = "product_id")
+    //Bidirectional Relationship
+    @ToString.Exclude
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "seller",cascade = {CascadeType.MERGE,CascadeType.PERSIST},orphanRemoval = true)
     private Set<Product> products = new HashSet<>();
 
-    @OneToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST},orphanRemoval = true)
-    @JoinColumn(name = "address_id")
-    private List<Address> addresses = new ArrayList<>();
+    //Unidirectional Relationship
+    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST})
+    @JoinTable(name = "users_addresses",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name="address_id")
+    )
+    private Set<Address> addresses = new HashSet<>();
+
+    //Bidirectional Relationship
+    @ToString.Exclude
+    @OneToOne(mappedBy = "user",fetch = FetchType.EAGER,
+    cascade = {CascadeType.MERGE,CascadeType.PERSIST},orphanRemoval = true)
+    private Cart cart;
 
 
 }
