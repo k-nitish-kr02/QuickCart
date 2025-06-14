@@ -1,4 +1,4 @@
-package com.E_Commerce.eCom.Configurations;
+package com.E_Commerce.eCom.Utils;
 
 import java.util.function.Consumer;
 

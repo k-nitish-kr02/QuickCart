@@ -1,15 +1,14 @@
 package com.E_Commerce.eCom.Model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,11 +20,12 @@ public class Cart {
 
     private Double totalPrice;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cart",fetch = FetchType.LAZY)
-    private Set<CartItem> cartItems;
+    @OneToMany(mappedBy = "cart", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true) // lazy is generating ConcurrentModificationException ?? main issue @Data which is causing hashcode and equal code function error for Jpa to load lazy  fetch type ,need to study
+    @Builder.Default
+    private Set<CartItem> cartItems = new HashSet<>();
 
 }

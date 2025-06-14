@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 
 @RestControllerAdvice
@@ -42,7 +41,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<APIresponse> myAPIException(APIException ex){
         String message = ex.getMessage();
         APIresponse apiResponse = new APIresponse(message,false);
-        if(Objects.equals(message, "Category name already exists.")) return new ResponseEntity<>(apiResponse,HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(apiResponse,HttpStatus.BAD_REQUEST);
     }
 
@@ -75,9 +73,5 @@ public class GlobalExceptionHandler {
         APIresponse apiResponse = new APIresponse("Something goes off ." + ex.getMessage() ,false);
         return new ResponseEntity<>(apiResponse,HttpStatus.INTERNAL_SERVER_ERROR);
     }
-//    @ExceptionHandler(APIException.class)
-//    public ResponseEntity<?> myAPIExceptionHandler(APIException ex){
-//        APIresponse apiResponse =  new APIresponse(ex.getMessage(),false);
-//        return new ResponseEntity<>(apiResponse,HttpStatus.BAD_REQUEST);
-//    }
+
 }

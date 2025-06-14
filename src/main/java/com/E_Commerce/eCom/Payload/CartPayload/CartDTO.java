@@ -1,14 +1,12 @@
-package com.E_Commerce.eCom.Payload;
+package com.E_Commerce.eCom.Payload.CartPayload;
 
 import com.E_Commerce.eCom.Payload.ProductPayload.ProductDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority(AppRole.ROLE_ADMIN.toString())
+                        .requestMatchers("/api/carts").hasAuthority(AppRole.ROLE_ADMIN.toString())
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex ->

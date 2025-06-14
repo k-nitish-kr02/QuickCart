@@ -1,6 +1,6 @@
 package com.E_Commerce.eCom.Service;
 
-import com.E_Commerce.eCom.Configurations.ObjectUtils;
+import com.E_Commerce.eCom.Utils.ObjectUtils;
 import com.E_Commerce.eCom.ExceptionHandler.APIException;
 import com.E_Commerce.eCom.ExceptionHandler.ResourceNotFoundException;
 import com.E_Commerce.eCom.Model.Category;

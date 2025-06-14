@@ -1,7 +1,6 @@
 package com.E_Commerce.eCom.Controller;
 
 import com.E_Commerce.eCom.Configurations.AppConstants;
-import com.E_Commerce.eCom.Model.User;
 import com.E_Commerce.eCom.Payload.Responses.AuthResponse;
 import com.E_Commerce.eCom.Payload.UserPayload.UserDTO;
 import com.E_Commerce.eCom.Payload.UserPayload.UserResponse;
@@ -14,8 +13,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")

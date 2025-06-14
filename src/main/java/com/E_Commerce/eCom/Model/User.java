@@ -6,9 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -65,7 +63,7 @@ public class User {
     //Bidirectional Relationship
     @ToString.Exclude
     @OneToOne(mappedBy = "user",fetch = FetchType.EAGER,
-    cascade = {CascadeType.MERGE,CascadeType.PERSIST},orphanRemoval = true)
+    cascade = {CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REMOVE},orphanRemoval = true)
     private Cart cart;
 
 

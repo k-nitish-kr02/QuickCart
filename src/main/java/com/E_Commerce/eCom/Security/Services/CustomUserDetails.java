@@ -27,7 +27,7 @@ public class CustomUserDetails implements UserDetails {
         this.username = user.getUsername();
         this.password = user.getPassword();
 
-//        if(user.getRoles().isEmpty()) this.authorities = new ArrayList<>();
+//        if(getUser.getRoles().isEmpty()) this.authorities = new ArrayList<>();
 
         this.authorities  = user.getRoles()
                 .stream()
