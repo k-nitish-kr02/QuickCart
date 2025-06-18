@@ -11,6 +11,7 @@ import com.E_Commerce.eCom.Payload.ProductPayload.ProductDTO;
 import com.E_Commerce.eCom.Repository.CartItemRepo;
 import com.E_Commerce.eCom.Repository.CartRepo;
 import com.E_Commerce.eCom.Repository.ProductRepo;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -131,6 +132,7 @@ public class CartService {
         return createCartDTO(cart);
     }
 
+    @Transactional
     //Method is not working ??
     public void deleteUserCart() {
         Cart cart = cartRepo.findByUsername(authUtil.loggedInUsername());
