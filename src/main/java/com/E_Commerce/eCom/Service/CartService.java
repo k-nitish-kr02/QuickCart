@@ -88,24 +88,22 @@ public class CartService {
             usrCartItem = new CartItem();
             usrCartItem.setCart(usrCart);
             usrCartItem.setProduct(product);
+            usrCartItem.setItemPrice(product.getPrice());
+            usrCartItem.setItemDiscount(product.getDiscount());
         }
         usrCartItem.setQuantity(quantity);
-        usrCartItem.setItemPrice(product.getPrice());
-        usrCartItem.setItemDiscount(product.getDiscount());
 
         cartItemRepo.save(usrCartItem);
         //add the cartItem to cart
         Set<CartItem> usrCartItems =  usrCart.getCartItems();
-        if(usrCartItems == null){
-            usrCartItems = new HashSet<>(); // initialization even after in initialized in entity
-        }
+//        if(usrCartItems == null){
+//            usrCartItems = new HashSet<>(); // initialization even after in initialized in entity
+//        }
         usrCartItems.add(usrCartItem);
         usrCart.setCartItems(usrCartItems);
 
-        double totalPrice = usrCart.getCartItems().stream()
-                .mapToDouble(item -> (item.getItemPrice() - item.getItemPrice() * item.getItemDiscount() *0.01 )* item.getQuantity())
-                .sum();
-        usrCart.setTotalPrice(totalPrice);
+
+        usrCart.setTotalPrice(usrCart.getTotalPrice()+ product.getSpecialPrice());
 
         // return cartDTO
         return createCartDTO(cartRepo.save(usrCart));
@@ -148,7 +146,7 @@ public class CartService {
         Product product = productRepo.findById(productId).orElseThrow(()-> new APIException("No product found having productId : ${productId}"));
 
         // check if orderQuantity < stockQuantity
-        if( product.getQuantity() ==0) {
+        if( product.getQuantity() == 0) {
             throw new APIException("Out of Stock , plz check later .. ");
         }
         if(product.getQuantity() < quantity){
@@ -158,6 +156,7 @@ public class CartService {
         CartItem cartItem = Optional.ofNullable(cartItemRepo.findByProductIdAndCartId(productId, cart.getId())).orElseThrow(()-> new APIException("Product is not added to Cart.."));
 
         cartItem.setQuantity(cartItem.getQuantity() + quantity);
+        //updating total price of cart
         cart.setTotalPrice(cart.getTotalPrice() + (cartItem.getItemPrice() - (cartItem.getItemPrice() * cartItem.getItemDiscount() * 0.01) )* quantity);
 
         Cart savedCart = cartRepo.save(cart);

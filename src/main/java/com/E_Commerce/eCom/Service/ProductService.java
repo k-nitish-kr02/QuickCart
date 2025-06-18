@@ -1,5 +1,7 @@
 package com.E_Commerce.eCom.Service;
 
+import com.E_Commerce.eCom.Model.Cart;
+import com.E_Commerce.eCom.Repository.CartRepo;
 import com.E_Commerce.eCom.Utils.ObjectUtils;
 import com.E_Commerce.eCom.ExceptionHandler.APIException;
 import com.E_Commerce.eCom.ExceptionHandler.ResourceNotFoundException;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -26,12 +29,14 @@ public class ProductService {
     private final ProductRepo productRepo;
     private final ModelMapper modelMapper;
     private final CategoryRepo categoryRepo;
+    private final CartRepo cartRepo;
 
     @Autowired
-    public ProductService(ProductRepo productRepo, ModelMapper modelMapper, CategoryRepo categoryRepo){
+    public ProductService(ProductRepo productRepo, ModelMapper modelMapper, CategoryRepo categoryRepo, CartRepo cartRepo){
         this.modelMapper=modelMapper;
         this.productRepo=productRepo;
         this.categoryRepo = categoryRepo;
+        this.cartRepo = cartRepo;
     }
     public ProductDTO addProduct(ProductDTO productDTO, Long categoryId) {
         Category category = categoryRepo.findById(categoryId).orElseThrow(()-> new ResourceNotFoundException("Category","CategoryId",categoryId));
@@ -137,6 +142,19 @@ public class ProductService {
         }
 
         Product savedProduct = productRepo.save(product);
+        //reflect this update to all carts containing this product
+
+        List<Cart> carts = cartRepo.findByProductId(savedProduct.getProductId());
+        carts.forEach(cart -> cart.getCartItems().forEach(cartItem -> {
+            if(Objects.equals(cartItem.getProduct().getProductId(), savedProduct.getProductId())){
+                cartItem.setProduct(savedProduct);
+                cart.setTotalPrice(cart.getTotalPrice() - cartItem.getItemPrice());
+                cartItem.setItemPrice(savedProduct.getSpecialPrice());
+                cart.setTotalPrice(cart.getTotalPrice() + cartItem.getItemPrice());
+                cartItem.setItemDiscount(savedProduct.getDiscount());
+            }
+        }));
+
         return modelMapper.map(savedProduct,ProductDTO.class);
     }
 
@@ -144,6 +162,10 @@ public class ProductService {
         Product product = productRepo.findById(productId)
                 .orElseThrow(()-> new ResourceNotFoundException("Product","productId",productId));
         productRepo.delete(product);
+
+        //reflect this to all containing this
+        List<Cart> carts = cartRepo.findByProductId(productId);
+        carts.forEach(cart -> cart.setTotalPrice(cart.getTotalPrice() - product.getSpecialPrice()));
         return modelMapper.map(product, ProductDTO.class);
     }
 }
