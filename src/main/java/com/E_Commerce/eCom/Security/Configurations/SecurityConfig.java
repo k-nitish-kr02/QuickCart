@@ -28,16 +28,16 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    AuthEntryPointJwt authEntryPointJwt;
+    private final AuthEntryPointJwt authEntryPointJwt;
+
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Autowired
-    CustomAccessDeniedHandler customAccessDeniedHandler;
-
-    @Autowired
-    public SecurityConfig(JwtFilter jwtFilter,UserDetailsServiceImpl userDetailsService){
+    public SecurityConfig(JwtFilter jwtFilter, UserDetailsServiceImpl userDetailsService, AuthEntryPointJwt authEntryPointJwt, CustomAccessDeniedHandler customAccessDeniedHandler){
         this.jwtFilter = jwtFilter;
         this.userDetailsService = userDetailsService;
+        this.authEntryPointJwt = authEntryPointJwt;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
     }
 
     @Bean
@@ -49,8 +49,10 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/seller/**").hasAuthority(AppRole.ROLE_SELLER.toString())
                         .requestMatchers("/api/admin/**").hasAuthority(AppRole.ROLE_ADMIN.toString())
-                        .requestMatchers("/api/carts").hasAuthority(AppRole.ROLE_ADMIN.toString())
+                        .requestMatchers("/api/cart/**").hasAuthority(AppRole.ROLE_USER.toString())
+                        .requestMatchers("/api/carts/**").hasAuthority(AppRole.ROLE_USER.toString())
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex ->

@@ -10,6 +10,7 @@ import com.E_Commerce.eCom.Service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,18 +51,7 @@ public class AuthController {
         return "everything is working fine.";
     }
 
-//    @PostMapping("/auth/role")
-//    public ResponseEntity<?> createRole(@RequestBody  String role){
-//        AppRole appRole = switch (role) {
-//            case "admin" -> AppRole.ROLE_ADMIN;
-//            case "seller" -> AppRole.ROLE_SELLER;
-//            default -> AppRole.ROLE_USER;
-//        };
-//        Role savedRole = Optional.ofNullable(roleRepository.findByRoleName(appRole)).orElseGet(
-//                ()-> roleRepository.save(new Role(appRole))
-//        );
-//        return ResponseEntity.ok(savedRole);
-//    }
+
 
     @GetMapping("/admin/auth/getAllUsers")
     public ResponseEntity<?> getAllUsers(
@@ -74,8 +64,10 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<?> getUser(){
-        return null;
+    @GetMapping("/auth/user/{userId}")
+    public ResponseEntity<?> getUser(@PathVariable Long userId){
+        UserDTO user = authService.getUserById(userId);
+        return ResponseEntity.ok(user);
     }
     @PostMapping("/auth/signOut")
     public ResponseEntity<?> signOut(){
@@ -83,12 +75,16 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).body("Signed out successfully..");
     }
 
-    public ResponseEntity<?> deleteUser(){
-        return null;
+    @DeleteMapping("/auth/user/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId){
+        UserDTO userDTO = authService.deleteUser(userId);
+        return new ResponseEntity<>(userDTO, HttpStatus.ACCEPTED);
     }
 
-    public ResponseEntity<?> updateUser(){
-        return null;
+    @PutMapping("/auth/user/{userId}")
+    public ResponseEntity<?> updateUser(@PathVariable Long userId,@RequestBody UserDTO userDTO){
+        UserDTO user = authService.updateUser(userId,userDTO);
+        return ResponseEntity.ok(user);
     }
 
 }

@@ -3,8 +3,8 @@ package com.E_Commerce.eCom.Model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,7 +16,7 @@ import java.util.Set;
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id ;
+    private Long cartId;
 
     private Double totalPrice;
 
@@ -24,8 +24,22 @@ public class Cart {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cart", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true) // lazy is generating ConcurrentModificationException ?? main issue @Data which is causing hashcode and equal code function error for Jpa to load lazy  fetch type ,need to study
-    @Builder.Default
-    private Set<CartItem> cartItems = new HashSet<>();
+    @OneToMany(mappedBy = "cart", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
+    // lazy is generating ConcurrentModificationException ?? main issue @Data which is causing hashcode and equal code function error for Jpa to load lazy  fetch type ,need to study
+    private List<CartItem> cartItems = new ArrayList<>();
+
+    public  Cart(double totalPrice, User user) {
+        this.totalPrice = totalPrice;
+        this.user = user;
+    }
+
+    public void removeCartItem(CartItem cartItem) {
+        cartItems.remove(cartItem);
+        cartItem.setCart(null);
+    }
+    public void setUserNull(Cart cart) {
+        cart.setUser(null);
+    }
+
 
 }

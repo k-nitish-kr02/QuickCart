@@ -31,21 +31,21 @@ public class CategoryController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/admin/categories")
+    @PostMapping("/seller/categories")
     public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO ){
         categoryDTO = categoryService.createCategory(categoryDTO);
         return  new ResponseEntity<>(categoryDTO,HttpStatus.OK);
     }
 
-    @PutMapping("/admin/categories/{Id}")
-    public ResponseEntity<CategoryDTO> updateCategory(@Valid @RequestBody CategoryDTO categoryDTO, @PathVariable Long Id){
-        categoryDTO = categoryService.updateCategory(categoryDTO,Id);
+    @PutMapping("/seller/categories/{categoryId}")
+    public ResponseEntity<CategoryDTO> updateCategory(@Valid @RequestBody CategoryDTO categoryDTO, @PathVariable Long categoryId){
+        categoryDTO = categoryService.updateCategory(categoryDTO,categoryId);
         return new ResponseEntity<>(categoryDTO,HttpStatus.OK);
     }
 
-    @DeleteMapping("/admin/categories/{Id}")
-    public ResponseEntity<String> deleteById(@PathVariable Long Id){
-        categoryService.deleteCategory(Id);
+    @DeleteMapping("/seller/categories/{categoryId}")
+    public ResponseEntity<String> deleteById(@PathVariable Long categoryId){
+        categoryService.deleteCategory(categoryId);
         return new ResponseEntity<>("Category Deleted.",HttpStatus.OK);
     }
 

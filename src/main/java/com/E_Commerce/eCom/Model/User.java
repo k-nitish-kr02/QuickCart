@@ -6,7 +6,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -53,12 +55,10 @@ public class User {
     private Set<Product> products = new HashSet<>();
 
     //Unidirectional Relationship
-    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST})
-    @JoinTable(name = "users_addresses",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name="address_id")
-    )
-    private Set<Address> addresses = new HashSet<>();
+//    @Getter
+//    @Setter
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REMOVE},orphanRemoval = true)
+    private List<Address> addresses = new ArrayList<>();
 
     //Bidirectional Relationship
     @ToString.Exclude

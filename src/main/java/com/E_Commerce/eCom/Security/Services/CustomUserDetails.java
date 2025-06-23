@@ -2,13 +2,10 @@ package com.E_Commerce.eCom.Security.Services;
 
 import com.E_Commerce.eCom.Model.User;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -18,6 +15,7 @@ public class CustomUserDetails implements UserDetails {
 
     private final String username;
     private final String password;
+    private final String email;
 
 
     private Collection<? extends GrantedAuthority> authorities;
@@ -26,6 +24,7 @@ public class CustomUserDetails implements UserDetails {
     public CustomUserDetails(User user) {
         this.username = user.getUsername();
         this.password = user.getPassword();
+        this.email = user.getEmail();
 
 //        if(getUser.getRoles().isEmpty()) this.authorities = new ArrayList<>();
 
@@ -33,6 +32,7 @@ public class CustomUserDetails implements UserDetails {
                 .stream()
                 .map(roles ->new SimpleGrantedAuthority(roles.getRoleName().toString()))
                 .collect(Collectors.toList());
+
 
     }
 

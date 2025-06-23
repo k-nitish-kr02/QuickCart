@@ -36,7 +36,7 @@ public class JwtService {
         String jwt = createJwt(username);
         ResponseCookie cookie = ResponseCookie.from(jwtCookie,jwt)
                 .path("/api")
-                .maxAge(24*60*60)
+                .maxAge(60*60)
                 .httpOnly(false)
                 .build();
         return cookie;
@@ -92,7 +92,7 @@ public class JwtService {
                 .add(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 *5))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 *60))
                 .and()
                 .signWith(getSignedKey())
                 .compact();

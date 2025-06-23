@@ -32,7 +32,7 @@ public class ProductController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
-    @GetMapping("/public/categories/{categoryId}/products")
+    @GetMapping("/products/public/categories/{categoryId}")
     public ResponseEntity<ProductResponse> getProductsByCategories(
             @PathVariable Long categoryId,
             @RequestParam(name = "pageNumber" ,defaultValue = AppConstants.PAGE_NUMBER , required = false) Integer pageNumber,
@@ -57,18 +57,18 @@ public class ProductController {
 
     }
 
-    @PostMapping("/admin/categories/{categoryId}/product")
+    @PostMapping("/seller/product/categories/{categoryId}")
     public ResponseEntity<ProductDTO> addProduct(@RequestBody ProductDTO productDTO,@PathVariable Long categoryId){
         ProductDTO productDTO1 = productService.addProduct(productDTO,categoryId);
         return new ResponseEntity<>(productDTO1, HttpStatus.CREATED);
     }
 
-    @PutMapping("/admin/products/{productId}")
+    @PutMapping("/seller/product/{productId}")
     public ResponseEntity<ProductDTO> updateProduct(@RequestBody ProductDTO productDTO,@PathVariable Long productId){
         ProductDTO productDTO1 = productService.updateProduct(productDTO,productId);
         return  new ResponseEntity<>(productDTO1,HttpStatus.ACCEPTED);
     }
-    @DeleteMapping("/admin/products/{productId}")
+    @DeleteMapping("/seller/product/{productId}")
     public ResponseEntity<ProductDTO> deleteProduct(@PathVariable Long productId){
         ProductDTO productDTO = productService.deleteProduct(productId);
         return  new ResponseEntity<>(productDTO,HttpStatus.OK);

@@ -44,10 +44,7 @@ public class CartService {
             return usrCart;
         }
 
-        usrCart = Cart.builder()
-                .totalPrice(0.0)
-                .user(authUtil.getUser())
-                .build();
+        usrCart = new Cart(0.0,authUtil.getUser());
 
         return cartRepo.save(usrCart);
 
@@ -83,7 +80,7 @@ public class CartService {
         Cart usrCart = createCart();
 
         //check for CartItem if not present , generate CartITem
-        CartItem usrCartItem = cartItemRepo.findByProductIdAndCartId(productId,usrCart.getId());
+        CartItem usrCartItem = cartItemRepo.findByProductIdAndCartId(productId,usrCart.getCartId());
 
         if(usrCartItem == null ){
             usrCartItem = new CartItem();
@@ -96,15 +93,13 @@ public class CartService {
 
         cartItemRepo.save(usrCartItem);
         //add the cartItem to cart
-        Set<CartItem> usrCartItems =  usrCart.getCartItems();
-//        if(usrCartItems == null){
-//            usrCartItems = new HashSet<>(); // initialization even after in initialized in entity
-//        }
+        List<CartItem> usrCartItems =  usrCart.getCartItems();
+
         usrCartItems.add(usrCartItem);
         usrCart.setCartItems(usrCartItems);
 
 
-        usrCart.setTotalPrice(usrCart.getTotalPrice()+ product.getSpecialPrice());
+        usrCart.setTotalPrice(usrCart.getTotalPrice()+ product.getSpecialPrice() * quantity);
 
         // return cartDTO
         return createCartDTO(cartRepo.save(usrCart));
@@ -121,7 +116,6 @@ public class CartService {
         }
 
         return new CartResponse(cartDTOs);
-//        return null;
 
     }
 
@@ -137,9 +131,10 @@ public class CartService {
     public void deleteUserCart() {
         Cart cart = cartRepo.findByUsername(authUtil.loggedInUsername());
         if(cart == null ) throw new APIException("No Cart Found.");
-        Cart originalCart = cartRepo.getReferenceById(cart.getId());
-        cartRepo.delete(originalCart); //method was not working
-//        cartRepo.deleteCartByCart(cart);
+
+        cart.setUserNull(cart);
+        cartRepo.delete(cart);
+
     }
 
     public CartDTO updateProductQuantity(Long productId, Integer quantity) {
@@ -155,7 +150,7 @@ public class CartService {
             throw new APIException("Please reduce the quantity .. ");
         }
 
-        CartItem cartItem = Optional.ofNullable(cartItemRepo.findByProductIdAndCartId(productId, cart.getId())).orElseThrow(()-> new APIException("Product is not added to Cart.."));
+        CartItem cartItem = Optional.ofNullable(cartItemRepo.findByProductIdAndCartId(productId, cart.getCartId())).orElseThrow(()-> new APIException("Product is not added to Cart.."));
 
         cartItem.setQuantity(cartItem.getQuantity() + quantity);
         //updating total price of cart
@@ -168,15 +163,21 @@ public class CartService {
 
     }
 
+    @Transactional
     public String deleteProductFromCart(Long cartId, Long productId) {
         Cart cart = cartRepo.findById(cartId).orElseThrow(()-> new ResourceNotFoundException("Cart","cartId",cartId));
 
         CartItem cartItem = Optional.ofNullable(cartItemRepo.findByProductIdAndCartId(productId, cartId)).orElseThrow(()-> new APIException("Product is not added to Cart.."));
 
-        cart.setTotalPrice(cart.getTotalPrice() - (cartItem.getItemPrice() - (cartItem.getItemPrice() * cartItem.getItemDiscount() * 0.01)) * cartItem.getQuantity());
+//        Product product = cartItem.getProduct();
 
-        cartRepo.save(cart);
-        cartItemRepo.deleteById(cartItem.getCartItemId());
+        cart.setTotalPrice(cart.getTotalPrice() - cartItem.getItemPrice() *(1 - cartItem.getItemDiscount() * 0.01) * cartItem.getQuantity());
+
+//        product.getCartItems().remove(cartItem);
+//        cart.getCartItems().remove(cartItem);
+        cart.removeCartItem(cartItem);
+
+
         return "Product " + cartItem.getProduct().getProductName() + " removed from cart.";
 
     }

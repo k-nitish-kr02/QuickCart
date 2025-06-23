@@ -16,7 +16,7 @@ public class CartController {
     private final CartService cartService;
 
     @Autowired
-    public CartController(CartService cartService, CartRepo cartRepo) {
+    public CartController(CartService cartService) {
         this.cartService = cartService;
     }
 
@@ -27,7 +27,7 @@ public class CartController {
         CartDTO cartDTO = cartService.addProductToCart(productId,quantity);
         return ResponseEntity.ok(cartDTO);
     }
-    @GetMapping("/carts")
+    @GetMapping("/admin/carts")
     public ResponseEntity<CartResponse> getAllCarts(){
         CartResponse response = cartService.getAllCarts();
         return ResponseEntity.ok(response);

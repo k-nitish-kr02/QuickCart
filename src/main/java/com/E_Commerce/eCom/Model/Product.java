@@ -3,8 +3,8 @@ package com.E_Commerce.eCom.Model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -34,7 +34,13 @@ public class Product {
     private User seller;
 
     @OneToMany(mappedBy = "product",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    private Set<CartItem> cartItems = new HashSet<>();
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartItem> cartItems = new ArrayList<>();
 //    concurrentModificationException is happening in fetching all user cart problem hash code methods
+
+    // Helper method for safe removal
+    public void removeCartItem(CartItem cartItem) {
+        cartItems.remove(cartItem);
+        cartItem.setProduct(null);
+    }
 }

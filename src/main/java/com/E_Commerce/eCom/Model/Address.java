@@ -27,14 +27,18 @@ public class Address {
     @NotBlank
     private String street;
     @NotBlank
-    private String building;
+    private String buildingName;
     @NotBlank
     @Size(min = 2, message = "state name should have atleast two alphabets..")
     private String state;
     @NotBlank
     private String country;
     @NotBlank
-    @Size(min = 6)
+    @Size(max = 6)
     private String pincode;
+
+    @ManyToOne
+    @JoinColumn(name= "user_id")
+    private User user;
 
 }

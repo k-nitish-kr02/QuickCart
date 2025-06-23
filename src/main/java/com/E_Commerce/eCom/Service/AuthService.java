@@ -1,6 +1,7 @@
 package com.E_Commerce.eCom.Service;
 
 import com.E_Commerce.eCom.ExceptionHandler.APIException;
+import com.E_Commerce.eCom.ExceptionHandler.ResourceNotFoundException;
 import com.E_Commerce.eCom.Model.AppRole;
 import com.E_Commerce.eCom.Model.Role;
 import com.E_Commerce.eCom.Model.User;
@@ -13,6 +14,7 @@ import com.E_Commerce.eCom.Repository.UserRepo;
 import com.E_Commerce.eCom.Requests.AuthRequest;
 import com.E_Commerce.eCom.Requests.SignUpRequest;
 import com.E_Commerce.eCom.Security.Services.JwtService;
+import com.E_Commerce.eCom.Utils.ObjectUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,10 +25,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +44,10 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
+    @Value("${spring.jwt.cookie}")
+    private String jwtCookie;
+
+
     @Autowired
     public AuthService(UserRepo userRepo, RoleRepository roleRepository, JwtService jwtService, ModelMapper modelMapper, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
         this.userRepo = userRepo;
@@ -52,6 +56,18 @@ public class AuthService {
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+    }
+
+    private UserDTO generateUserDTO(User user){
+
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        RoleDTO roleDTO = new RoleDTO(
+                user.getRoles().stream()
+                        .map(role -> role.getRoleName().toString())
+                        .collect(Collectors.toSet())
+        );
+        userDTO.setRoleGranted(roleDTO);
+        return userDTO;
     }
 
 
@@ -112,7 +128,6 @@ public class AuthService {
 
 //        String token = jwtService.createJwt(request.getUsername());
         ResponseCookie jwtCookie = jwtService.generateJwtCookie(request.getUsername());
-        String token = jwtCookie.toString();
 
         return new AuthResponse(jwtCookie, savedUserDTO);
     }
@@ -122,7 +137,7 @@ public class AuthService {
         String password = authRequest.getPassword();
 
 
-        Authentication authentication = authenticationManager.authenticate(
+        authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username,password)
         );
 
@@ -137,8 +152,6 @@ public class AuthService {
         return new AuthResponse(cookie,userDTO);
     }
 
-    @Value("${spring.jwt.cookie}")
-    private String jwtCookie;
 
     public ResponseCookie cleanCurrentCookie() {
 
@@ -172,5 +185,28 @@ public class AuthService {
                 .totalPages(page.getTotalPages())
                 .lastPage(page.isLast())
                 .build();
+    }
+
+    public UserDTO deleteUser(Long userId) {
+        User user = userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User","userId",userId));
+
+        UserDTO userDTO = generateUserDTO(user);
+
+        userRepo.delete(user);
+        return userDTO;
+    }
+
+    public UserDTO getUserById(Long userId) {
+        User user = userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User","userId",userId));
+
+        return generateUserDTO(user);
+    }
+
+    public UserDTO updateUser(Long userId,UserDTO userDTO) {
+        User user = userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User","userId",userId));
+        ObjectUtils.setIfNotNull(userDTO.getEmail(),user::setEmail);
+        ObjectUtils.setIfNotNull(userDTO.getUsername(), user::setUsername);
+
+        return generateUserDTO(user);
     }
 }
