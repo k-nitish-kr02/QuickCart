@@ -1,4 +1,3 @@
-import './App.css'
 import Products from "./Components/Products.jsx";
 
 function App() {
