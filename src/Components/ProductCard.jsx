@@ -9,7 +9,7 @@ const ProductCard = ({product}) => {
     return(
 
         <div className="border rounded-lg shadow-xl transition-shadow duration-300 overflow-hidden">
-            <div className="w-full overflow-hidden aspect-[3/2]" onClick={()=> {setOpen(true)}} >
+            <div className="w-full overflow-hidden aspect-[1]" onClick={()=> {setOpen(true)}} >
 
                 <img className="w-full h-full cursor-pointer transition-transform duration-300 transform hover:scale-110"
                      src={product.productImage}
@@ -49,7 +49,7 @@ const ProductCard = ({product}) => {
 
 
             </div>
-            <ProductViewModal open={open} setOpen={setOpen} product={product}/>
+            <ProductViewModal open={open} setOpen={setOpen} isAvailable={isAvailable} product={product}/>
 
         </div>
 

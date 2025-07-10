@@ -1,65 +1,31 @@
 import ProductCard from "./ProductCard.jsx";
+import {useDispatch, useSelector} from "react-redux";
+import {useEffect} from "react";
+import {fetchProducts} from "../Store/Actions/fetchProducts.js";
+import {FaExclamationTriangle} from "react-icons/fa";
 
 const Products = () => {
-    const isLoading = false;
-    const errorMsg = "";
-    const products = [
-        {
-            "productId": 1,
-            "productName": "Product_8224",
-            "productImage": "https://placehold.co/600x400",
-            "description": "Description explaining the name Product_3427",
-            "quantity": 49,
-            "price": 484,
-            "discount": 44,
-            "specialPrice": 348,
-            "categoryId": 2,
-            "seller": "someone.."
-        },
-        {
-            "productId": 2,
-            "productName": "Product_2065",
-            "productImage": "https://placehold.co/600x400",
-            "description": "Description explaining the name Product_5916",
-            "quantity": 56,
-            "price": 917,
-            "discount": 45,
-            "specialPrice": 104,
-            "categoryId": 1,
-            "seller": "someone.."
-        },
-        {
-            "productId": 3,
-            "productName": "Product_9916",
-            "productImage": "https://placehold.co/600x400",
-            "description": "Description explaining the name Product_9885",
-            "quantity": 42,
-            "price": 995,
-            "discount": 10,
-            "specialPrice": 71,
-            "categoryId": 2,
-            "seller": "someone.."
-        },
-        {
-            "productId": 4,
-            "productName": "Product_6521",
-            "productImage": "https://placehold.co/600x400",
-            "description": "Description explaining the name Product_1926",
-            "quantity": 0,
-            "price": 411,
-            "discount": 25,
-            "specialPrice": 9,
-            "categoryId": 2,
-            "seller": "someone.."
-        }
-    ]
+
+    const isLoading = useSelector(state => state.errors.isLoading);
+    const errorMsg = useSelector(state => state.errors.errorMsg);
+    const products = useSelector(state => state.products.products);
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(fetchProducts());
+    },[dispatch]);
+
     return (
         <div className="lg:px - 14 sm:px-8 px-4 py-14 2xl:w-[90%] 2xl:mx-auto">
             {isLoading ? (
                 <p>Loading...</p>
             ): errorMsg ? (
-                <div>
-                    <p>something went wrong</p>
+                <div className="flex justify-center items-center h-[200px]">
+                    <FaExclamationTriangle className="text-slate-800 text-3xl mr-2"/>
+                    <span className="text-slate-800 text-lg font-medium">
+                        {String(errorMsg)}
+                    </span>
                 </div>
             ):(
                 <div className="min-h-[700px]">
