@@ -1,6 +1,7 @@
 import {FaShoppingCart} from "react-icons/fa";
 import ProductViewModal from "./ProductViewModal.jsx";
 import {useState} from "react";
+import {truncateText} from "../../Utils/truncateText.js";
 
 const ProductCard = ({product}) => {
     const isAvailable = product.quantity && (product.quantity > 0);
@@ -20,10 +21,10 @@ const ProductCard = ({product}) => {
 
             <div className="p-4">
                 <h2 onClick={()=> {setOpen(true)}} className="text-lg font-semibold text-gray-700 cursor-pointer" >
-                    {product.productName}
+                    {truncateText(product.productName,40)}
                 </h2>
                 <div className="min-h-20 max-h-20">
-                    <p className="text-gray-500 text-sm">{product.description}</p>
+                    <p className="text-gray-500 text-sm">{truncateText(product.description)}</p>
                 </div>
 
                 <div className="flex justify-between">

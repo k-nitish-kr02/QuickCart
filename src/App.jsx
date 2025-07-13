@@ -1,4 +1,4 @@
-import Products from "./Components/Products.jsx";
+import Products from "./Components/Products/Products.jsx";
 
 function App() {
 

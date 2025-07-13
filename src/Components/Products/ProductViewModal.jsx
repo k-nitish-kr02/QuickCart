@@ -1,6 +1,6 @@
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle} from '@headlessui/react'
 import {Divider} from "@mui/material";
-import Status from "./Status.jsx";
+import Status from "../SharedComponents/Status.jsx";
 import {MdClose, MdDone} from "react-icons/md";
 
 export default function ProductViewModal({open,setOpen,isAvailable,product}) {

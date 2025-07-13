@@ -1,8 +1,13 @@
 import api from "../../APIs/api.js";
-export const fetchProducts = () => async (dispatch) => {
+export const fetchProducts = (params,isCategory) => async (dispatch) => {
+
+
     try {
-        dispatch({type : "IS_FETCHING"});
-        const {data} = await api.get(`/public/products`);
+        dispatch({type : "IS_FETCHING"}); //making isloading = true
+
+        const {data} = isCategory ? await api.get(`/public/products/category?${params}`)
+                                : await api.get(`/public/products?${params}`);
+
         dispatch({
             type :"FETCH_PRODUCTS",
             payload: {
@@ -16,7 +21,8 @@ export const fetchProducts = () => async (dispatch) => {
                 }
             }
         })
-        dispatch({type : "PRODUCTS_FETCHED"});
+
+        dispatch({type : "PRODUCTS_FETCHED"}); //making isloading = false
     }catch (e) {
         console.log(e);
         dispatch({type : "ERROR_OCCURRED",payload: e});

@@ -9,7 +9,7 @@ export  const errorReducer = (state = initialState, action) => {
             return {
                 ...state,
                 isLoading: false,
-                errorMsg: action.payload,
+                errorMessage: action.payload,
             };
         case "IS_FETCHING":
             return {

@@ -1,30 +1,38 @@
 import ProductCard from "./ProductCard.jsx";
-import {useDispatch, useSelector} from "react-redux";
-import {useEffect} from "react";
-import {fetchProducts} from "../Store/Actions/fetchProducts.js";
+import {useSelector} from "react-redux";
 import {FaExclamationTriangle} from "react-icons/fa";
+import Filter from "./Filter.jsx";
+import useProductFilter from "../../CustomHooks/useProductFilter.js";
+import useCategory from "../../CustomHooks/useCategory.js";
+import {Loader} from "../SharedComponents/Loader.jsx";
+import Paginations from "../SharedComponents/Paginations.jsx";
+
 
 const Products = () => {
 
     const isLoading = useSelector(state => state.errors.isLoading);
-    const errorMsg = useSelector(state => state.errors.errorMsg);
+    const errorMessage = useSelector(state => state.errors.errorMessage);
     const products = useSelector(state => state.products.products);
+    const categories = useSelector(state => state.categories.categories);
+    const pagination = useSelector(state => state.products.pagination);
 
-    const dispatch = useDispatch();
 
-    useEffect(() => {
-        dispatch(fetchProducts());
-    },[dispatch]);
+    useProductFilter();
+    useCategory();
+
+    console.log(categories);
 
     return (
         <div className="lg:px - 14 sm:px-8 px-4 py-14 2xl:w-[90%] 2xl:mx-auto">
+            <Filter categories={categories}/>
+
             {isLoading ? (
-                <p>Loading...</p>
-            ): errorMsg ? (
+                <Loader />
+            ): errorMessage ? (
                 <div className="flex justify-center items-center h-[200px]">
                     <FaExclamationTriangle className="text-slate-800 text-3xl mr-2"/>
                     <span className="text-slate-800 text-lg font-medium">
-                        {String(errorMsg)}
+                        {String(errorMessage)}
                     </span>
                 </div>
             ):(
@@ -38,7 +46,11 @@ const Products = () => {
             )
 
             }
+            <div className="flex justify-center pt-10">
+                <Paginations pagination={pagination} />
+            </div>
         </div>
+
     )
 }
 export default Products;
