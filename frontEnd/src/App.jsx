@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./Components/Home/Navbar.jsx";
 import {Toaster} from "react-hot-toast";
 import Home from "./Components/Home/Home.jsx";
+import Cart from "./Components/Cart/Cart.jsx";
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
                   <Routes>
                       <Route path="/" element={<Home/>} />
                       <Route path="/products" element={<Products/>} />
+                      <Route path="/cart" element={<Cart/>} />
                   </Routes>
               </Router>
               <Toaster position = "bottom-center" />

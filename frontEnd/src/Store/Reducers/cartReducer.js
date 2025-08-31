@@ -9,12 +9,12 @@ export const cartReducer = (state = initialState, action) => {
         case "ADD_CART":
             {
                 const productToAdd = action.payload;
-                const existingProduct = state.cart.find(
+                const existingProduct = state.cart.find(//
                     (item) => item.productId === productToAdd.productId
                 );
 
                 if(existingProduct) {
-                    const updatedCart = state.cart.map((item) => {
+                    const updatedCart = state.cart.map((item) => { //
                         if (item.productId === productToAdd.productId) {
                             return productToAdd;
                         } else {
@@ -27,17 +27,17 @@ export const cartReducer = (state = initialState, action) => {
                         cart: updatedCart,
                     };
                 } else {
-                    const newCart = [...state.cart, productToAdd];
+                    const newCart = [...state.cart, productToAdd]; //
                     return {
                         ...state,
-                        cart: newCart,
+                        cart: newCart,//
                     };
                 }
             }
         case "REMOVE_CART":
             return {
                 ...state,
-                cart: state.cart.filter(
+                cart: state.cart.filter( //
                     (item) => item.productId !== action.payload.productId
                 ),
             };
